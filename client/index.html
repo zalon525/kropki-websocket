@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Kropki have gone WEBSOCKET!!!</title>
+
+        <style>
+        .player {
+            width: 60px;
+            height: 60px;
+            background-color: royalblue;
+            position: absolute;
+        }
+        </style>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script>
+        
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        $(document).ready(function(event) {
+            var socket = new WebSocket("ws://localhost:8765");
+            
+            function handlePlayerJoined(player_id, x, y) {
+                $(document.createElement('div')).attr({
+                    id: "player" + player_id,
+                    class: "player",
+                }).css({
+                    left: x + "px",
+                    top: y + "px",
+                    backgroundColor: getRandomColor()
+                }).appendTo("body");
+            }
+
+            function handlePlayerLeft(player_id) {
+                $("#player" + player_id).remove();
+            }
+
+            function handlePlayerMoved(player_id, x, y) {
+                console.log("moved?");
+                $("#player" + player_id).css({left: x + "px", top: y + "px"});
+            }
+
+            socket.onmessage = function(event) {
+                var msg = JSON.parse(event.data);
+                var type = msg.type;
+                var body = msg.body;
+                switch(type) {
+                    case "player_joined":
+                    handlePlayerJoined(body.id, body.x, body.y);
+                    break;
+                    case "player_left":
+                    handlePlayerLeft(body.id);
+                    break;
+                    case "player_moved":
+                    handlePlayerMoved(body.id, body.x, body.y);
+                    break;
+                }
+            };
+
+            $(document).keypress(function(event) {
+                socket.send(JSON.stringify({
+                    type: "keypressed",
+                    body: {
+                        key: event.key
+                    }
+                }));
+            });
+        });
+        </script>
+    </head>
+
+    <body>
+
+    </body>
+</html>
