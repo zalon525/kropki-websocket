@@ -5,6 +5,7 @@ import json
 import sys
 
 
+HOST = "localhost"
 PORT = 8765
 
 
@@ -72,8 +73,9 @@ class PlayerMovedMessage(ServerMessage):
 
 
 class Game:
-    def __init__(self, event_loop, port=PORT):
+    def __init__(self, event_loop, host=HOST, port=PORT):
         self.event_loop = event_loop
+        self.host = host
         self.port = port
         self.sync_connections = []
         self.players = []
@@ -119,7 +121,7 @@ class Game:
         await asyncio.wait([websocket.send(PlayerJoinedMessage(p).to_json()) for p in self.players])
 
     def run_game_loop(self):
-        start_server = websockets.serve(self.connection_handler, 'localhost', self.port)
+        start_server = websockets.serve(self.connection_handler, self.host, self.port)
         self.event_loop.run_until_complete(start_server)
         self.event_loop.run_forever()
 

@@ -8,7 +8,6 @@
         .player {
             width: 60px;
             height: 60px;
-            background-color: royalblue;
             position: absolute;
         }
         </style>
@@ -26,7 +25,8 @@
         }
 
         $(document).ready(function(event) {
-            var socket = new WebSocket("ws://localhost:8765");
+            var url = "ws://localhost:8765"; // change it to your WebSocket application URL
+            var socket = new WebSocket(url);
             
             function handlePlayerJoined(player_id, x, y) {
                 $(document.createElement('div')).attr({
@@ -44,7 +44,6 @@
             }
 
             function handlePlayerMoved(player_id, x, y) {
-                console.log("moved?");
                 $("#player" + player_id).css({left: x + "px", top: y + "px"});
             }
 
