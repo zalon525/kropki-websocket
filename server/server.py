@@ -101,13 +101,13 @@ class Game:
         print("Received: {}".format(json.dumps(msg)))
         if msg['type'] == 'keypressed':
             key = msg['body']['key']
-            if key == 'ArrowUp':
+            if key == 'w':
                 player.move_up()
-            elif key == 'ArrowDown':
+            elif key == 's':
                 player.move_down()
-            elif key == 'ArrowRight':
+            elif key == 'd':
                 player.move_right()
-            elif key == 'ArrowLeft':
+            elif key == 'a':
                 player.move_left()
 
             await self.broadcast_message(PlayerMovedMessage(player))
@@ -129,6 +129,7 @@ class Game:
 def main(argv):
     game = Game(asyncio.get_event_loop())
     game.run_game_loop()
+
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))
